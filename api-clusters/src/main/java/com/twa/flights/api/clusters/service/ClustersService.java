@@ -27,30 +27,77 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 public class ClustersService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClustersService.class);
+    private static final String BARRIER_PATH = "/barriers/search";
 
     private final ItinerariesSearchService itinerariesSearchService;
     private final PricingService pricingService;
     private final ClustersRepository repository;
     private final FlightIdGeneratorHelper flightIdGeneratorHelper;
+    private final ZooKeeperService zooKeeperService;
 
     @Autowired
     public ClustersService(ItinerariesSearchService itinerariesSearchService, PricingService pricingService,
-            ClustersRepository repository, FlightIdGeneratorHelper flightIdGeneratorHelper) {
+            ClustersRepository repository, FlightIdGeneratorHelper flightIdGeneratorHelper,
+            ZooKeeperService zooKeeperService) {
         this.itinerariesSearchService = itinerariesSearchService;
         this.pricingService = pricingService;
         this.repository = repository;
         this.flightIdGeneratorHelper = flightIdGeneratorHelper;
+        this.zooKeeperService = zooKeeperService;
     }
 
     public ClusterSearchDTO availability(ClustersAvailabilityRequestDTO request) {
         LOGGER.debug("begin the search");
-        ClusterSearchDTO response = getPreviousSearchResult(request);
-        if (isNull(response) && isEmpty(request.getId()))
-            response = availabilityFromProviders(request);
-        else
-            response = availabilityFromDatabase(request);
 
+        ClusterSearchDTO response = null;
+        if (StringUtils.isEmpty(request.getId())) { // New search
+            response = repository.get(flightIdGeneratorHelper.generate(request));// Obtain info from a previous search
+            if (response == null) {
+                response = availabilityFromBarrierOrProvider(request);
+            } else {
+                // Limit the size
+                response.setItineraries(
+                        response.getItineraries().stream().limit(request.getAmount()).collect(Collectors.toList()));
+            }
+        } else { // Pagination old search
+            response = availabilityFromDatabase(request);
+        }
         return response;
+    }
+
+    private ClusterSearchDTO availabilityFromBarrierOrProvider(ClustersAvailabilityRequestDTO request) {
+        ClusterSearchDTO response;
+        final String barrierPath = buildBarrierPath(request);
+
+        if (isBarrierCreated(barrierPath)) {
+            zooKeeperService.waitOnBarrier(barrierPath);
+
+            response = repository.get(flightIdGeneratorHelper.generate(request));// Obtain info from a previous search
+
+            // If itineraries was saved in cache ...
+            if (!response.getItineraries().isEmpty()) {
+                LOGGER.info("Returning {} flights from cache...", response.getItineraries().size());
+
+                // Limit the size
+                response.setItineraries(
+                        response.getItineraries().stream().limit(request.getAmount()).collect(Collectors.toList()));
+
+                return response;
+            }
+        }
+
+        return availabilityFromProviders(request);
+    }
+
+    private synchronized boolean isBarrierCreated(String barrierPath) {
+        if (!zooKeeperService.barrierExists(barrierPath)) {
+            return zooKeeperService.createBarrier(barrierPath);
+        }
+        return true;
+    }
+
+    private String buildBarrierPath(ClustersAvailabilityRequestDTO request) {
+        return String.format("%s/%s", BARRIER_PATH, flightIdGeneratorHelper.generate(request));
     }
 
     private ClusterSearchDTO getPreviousSearchResult(ClustersAvailabilityRequestDTO request) {
