@@ -5,19 +5,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.twa.flights.api.clusters.dto.UpdatedPaxPriceDTO;
-import com.twa.flights.common.dto.itinerary.MarkupDTO;
-import com.twa.flights.common.dto.itinerary.PaxPriceDTO;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.twa.flights.api.clusters.connector.PricingConnector;
+import com.twa.flights.api.clusters.dto.UpdatedPaxPriceDTO;
 import com.twa.flights.api.clusters.dto.UpdatedPriceInfoDTO;
 import com.twa.flights.common.dto.itinerary.ItineraryDTO;
+import com.twa.flights.common.dto.itinerary.MarkupDTO;
+import com.twa.flights.common.dto.itinerary.PaxPriceDTO;
 import com.twa.flights.common.dto.itinerary.PriceInfoDTO;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 @Service
 public class PricingService {
@@ -50,6 +51,7 @@ public class PricingService {
                 .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("unused")
     private List<ItineraryDTO> fallbackPriceItineraries(List<ItineraryDTO> itineraries, RuntimeException exception) {
         for (ItineraryDTO itinerary : itineraries) {
 

@@ -2,7 +2,6 @@ package com.twa.flights.api.itineraries.search.facade;
 
 import java.util.List;
 
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,8 @@ import com.twa.flights.api.itineraries.search.connector.ProviderBetaConnector;
 import com.twa.flights.common.dto.enums.Provider;
 import com.twa.flights.common.dto.itinerary.ItineraryDTO;
 import com.twa.flights.common.dto.request.AvailabilityRequestDTO;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 @Component
 public class ProviderBetaFacade implements ProviderFacade {

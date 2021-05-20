@@ -34,19 +34,19 @@ spring:
 connector:  
    provider-alpha:
       host: localhost:8070
-      responsetimeout: 5000
-      connectiontimeout: 5000
-      readtimeout: 5000
+      responseTimeout: 5000
+      connectionTimeout: 5000
+      readTimeout: 5000         
    provider-beta:
       host: localhost:9070
-      responsetimeout: 5000
-      connectiontimeout: 5000
-      readtimeout: 5000
-
+      responseTimeout: 5000
+      connectionTimeout: 5000
+      readTimeout: 5000 
+      
 resilience4j.circuitbreaker:
   configs:
     default:
-      registerHealthIndicator: true
+      registerHealthIndicator: true  
       ringBufferSizeInClosedState: 5
       ringBufferSizeInHalfOpenState: 3
       waitDurationInOpenState: 10000
@@ -56,8 +56,9 @@ resilience4j.circuitbreaker:
         - java.lang.InterruptedException
         - io.netty.handler.timeout.ReadTimeoutException
         - org.springframework.web.reactive.function.client.WebClientRequestException
+        - com.twa.flights.api.itineraries.search.exception.TWAException
   backends:
     provider-alpha:
       baseConfig: default
     provider-beta:
-      baseConfig: default
+      baseConfig: default          

@@ -6,12 +6,6 @@ management:
       exposure:
         include: "*"
 
-zookeeper:
-  host: api-clusters-zookeeper:2181
-  maxRetries: 2
-  timeBetweenRetries: 100
-  connectiontimeout: 10000000
-
 server:
   port: 4070
   servlet:
@@ -44,24 +38,24 @@ redis:
 connector:
    catalog:
       host: api-catalog:6070
-      responsetimeout: 2000
-      connectiontimeout: 2000
-      readtimeout: 2000
+      responseTimeout: 2000
+      connectionTimeout: 2000
+      readTimeout: 2000
    pricing:
       host: api-pricing:5070
-      responsetimeout: 10000
-      connectiontimeout: 10000
-      readtimeout: 10000
+      responseTimeout: 10000
+      connectionTimeout: 10000
+      readTimeout: 10000   
    itineraries-search:
       host: api-itineraries-search:7070
-      responsetimeout: 10000
-      connectiontimeout: 10000
-      readtimeout: 10000
-
+      responseTimeout: 10000
+      connectionTimeout: 10000
+      readTimeout: 10000      
+      
 resilience4j.circuitbreaker:
   configs:
     default:
-      registerHealthIndicator: true
+      registerHealthIndicator: true  
       ringBufferSizeInClosedState: 5
       ringBufferSizeInHalfOpenState: 3
       waitDurationInOpenState: 10000
@@ -73,4 +67,4 @@ resilience4j.circuitbreaker:
         - org.springframework.web.reactive.function.client.WebClientRequestException
   backends:
     pricing:
-      baseConfig: default
+      baseConfig: default          
