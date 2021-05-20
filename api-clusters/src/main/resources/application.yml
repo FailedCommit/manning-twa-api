@@ -44,16 +44,33 @@ redis:
 connector:
    catalog:
       host: localhost:6070
-      responsetimeout: 10000000
-      connectiontimeout: 10000000
-      readtimeout: 10000000
+      responsetimeout: 2000
+      connectiontimeout: 2000
+      readtimeout: 2000
    pricing:
       host: localhost:5070
-      responsetimeout: 100000000
-      connectiontimeout: 100000000
-      readtimeout: 100000000
+      responsetimeout: 10000
+      connectiontimeout: 10000
+      readtimeout: 10000
    itineraries-search:
       host: localhost:7070
-      responsetimeout: 100000000
-      connectiontimeout: 100000000
-      readtimeout: 100000000
+      responsetimeout: 10000
+      connectiontimeout: 10000
+      readtimeout: 10000
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      registerHealthIndicator: true
+      ringBufferSizeInClosedState: 5
+      ringBufferSizeInHalfOpenState: 3
+      waitDurationInOpenState: 10000
+      failureRateThreshold: 50
+      recordExceptions:
+        - java.lang.RuntimeException
+        - java.lang.InterruptedException
+        - io.netty.handler.timeout.ReadTimeoutException
+        - org.springframework.web.reactive.function.client.WebClientRequestException
+  backends:
+    pricing:
+      baseConfig: default
