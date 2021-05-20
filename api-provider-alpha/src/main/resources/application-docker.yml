@@ -18,7 +18,7 @@ jetty:
     
 chaos:
   monkey:
-    enabled: false
+    enabled: true
     watcher:
       restController: true
     assaults:
@@ -34,6 +34,6 @@ spring:
 connector:
    catalog:
       host: api-catalog:6070
-      responsetimeout: 10000000
-      connectiontimeout: 10000000
-      readtimeout: 10000000
+      responsetimeout: 1000
+      connectiontimeout: 1000
+      readtimeout: 1000

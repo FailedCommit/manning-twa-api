@@ -34,11 +34,11 @@ spring:
 connector:  
    provider-alpha:
       host: api-provider-alpha:8070
-      responsetimeout: 10000000
-      connectiontimeout: 10000000
-      readtimeout: 10000000
+      responsetimeout: 5000
+      connectiontimeout: 5000
+      readtimeout: 5000
    provider-beta:
       host: api-provider-beta:9070
-      responsetimeout: 10000000
-      connectiontimeout: 10000000
-      readtimeout: 10000000
+      responsetimeout: 5000
+      connectiontimeout: 5000
+      readtimeout: 5000
